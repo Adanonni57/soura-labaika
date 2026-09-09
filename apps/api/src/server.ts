@@ -49,7 +49,7 @@ app.post('/auth/login', { config: { public: true }, preHandler: app.rateLimit({ 
   });
   const token = await signSession({ userId: user.id, etablissementId: user.etablissement_id, role: user.role, sessionId: result.rows[0].id });
   reply.setCookie('soura_session', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', path: '/', maxAge: Number(process.env.SESSION_TTL_MINUTES ?? 30) * 60 });
-  return { role: user.role, mustChangePassword: user.must_change_password ?? false };
+  return { role: user.role, mustChangePassword: user.must_change_password ?? false, token };
 });
 
 app.post('/auth/logout', async (req, reply) => {
