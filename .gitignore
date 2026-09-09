@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+*.log
+apps/web/android/
+coverage/
+/app/
+/build/
+/build.gradle.kts
+/settings.gradle.kts
+/gradle/
+/gradlew
+/gradlew.bat
+/local.properties
+/gradle.properties
+/.idea/

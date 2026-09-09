@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: soura
+      POSTGRES_PASSWORD: soura
+      POSTGRES_DB: soura
+    ports: ["5432:5432"]
+    volumes:
+      - soura_pg:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/demo.sql:/docker-entrypoint-initdb.d/02-demo.sql:ro
+volumes:
+  soura_pg:

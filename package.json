@@ -1,0 +1,25 @@
+{
+  "name": "labaika-soura",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w @soura/api\" \"npm run dev -w @soura/web\"",
+    "build": "npm run build -w @soura/api && npm run build -w @soura/web",
+    "test": "npm run test -w @soura/api",
+    "typecheck": "npm run typecheck -w @soura/api && npm run typecheck -w @soura/web",
+    "demo:seed": "node scripts/create-demo-users.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "allowScripts": {
+    "argon2@0.44.0": true,
+    "esbuild@0.28.2": true
+  }
+}

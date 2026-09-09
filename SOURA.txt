@@ -1,0 +1,10 @@
+NAME : labaika-soura-test
+ID PROJECT : xcarjnbuxjhijpyqarjn
+PROJECT REGION : eu-central-1
+
+postgresql://postgres.xcarjnbuxjhijpyqarjn:[RAMAnonni1996]@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
+
+host=aws-0-eu-central-1.pooler.supabase.com
+port=5432
+database=postgres
+user=postgres.xcarjnbuxjhijpyqarjn
