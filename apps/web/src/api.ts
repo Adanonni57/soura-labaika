@@ -11,3 +11,5 @@ export async function api<T>(path:string,init:RequestInit={}):Promise<T>{
 export type Me={id:string;identifiant:string;nom_affichage:string;role:string;classe_id?:string};
 export type Space={id:string;nom:string;type:string};
 export type Message={id:string;contenu:string;created_at:string;auteur:string};
+export type AdminUser={id:string;identifiant:string;nom_affichage:string;role:string;classe_id?:string;actif:boolean};
+export type AdminClass={id:string;nom:string};

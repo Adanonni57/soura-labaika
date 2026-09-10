@@ -34,7 +34,7 @@ app.addHook('preHandler', async (req) => {
   req.principal = p;
 });
 
-app.get('/health', { config: { public: true } }, async () => ({ status: 'ok' }));
+app.get('/health', { config: { public: true } }, async () => { await db.query('SELECT 1'); return { status: 'ok' }; });
 
 app.post('/auth/login', { config: { public: true }, preHandler: app.rateLimit({ max: 5, timeWindow: '1 minute' }) }, async (req, reply) => {
   const input = z.object({ identifiant: z.string().min(3).max(80), password: z.string().min(8).max(200) }).parse(req.body);
@@ -174,6 +174,10 @@ app.delete('/admin/sessions/:id', async req=>{
   const r=await db.query(`UPDATE sessions s SET revoked_at=now() FROM utilisateurs u WHERE s.id=$1 AND s.utilisateur_id=u.id AND u.etablissement_id=$2 RETURNING s.id`,[id,p.etablissementId]);
   if(!r.rowCount)throw fail('Session introuvable',404);await db.query('INSERT INTO audit(etablissement_id,acteur_id,action,cible_id) VALUES($1,$2,$3,$4)',[p.etablissementId,p.userId,'REVOCATION_SESSION',id]);return{ok:true};
 });
+
+app.get('/admin/classes', async req=>{const p=req.principal!;if(p.role!=='ADMIN_PRINCIPAL')throw fail('Accès refusé',403);const r=await db.query('SELECT id,nom FROM classes WHERE etablissement_id=$1 ORDER BY nom',[p.etablissementId]);return r.rows});
+
+app.get('/admin/users', async req=>{const p=req.principal!;if(p.role!=='ADMIN_PRINCIPAL')throw fail('Accès refusé',403);const r=await db.query('SELECT id,identifiant,nom_affichage,role,classe_id,actif FROM utilisateurs WHERE etablissement_id=$1 ORDER BY role,nom_affichage',[p.etablissementId]);return r.rows});
 
 app.post('/admin/users', async req=>{
   const p=req.principal!; if(p.role!=='ADMIN_PRINCIPAL') throw fail('Accès refusé',403);
