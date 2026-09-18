@@ -196,6 +196,18 @@ app.post('/admin/spaces',async req=>{const p=req.principal!;if(p.role!=='ADMIN_P
 
 app.patch('/admin/spaces/:id/writing',async req=>{const p=req.principal!;if(p.role!=='ADMIN_PRINCIPAL')throw fail('Accès refusé',403);const{id}=z.object({id:z.string().uuid()}).parse(req.params);const{fermee}=z.object({fermee:z.boolean()}).parse(req.body);const r=await db.query('UPDATE espaces SET ecriture_fermee=$1 WHERE id=$2 AND etablissement_id=$3 RETURNING id',[fermee,id,p.etablissementId]);if(!r.rowCount)throw fail('Espace introuvable',404);await db.query('INSERT INTO audit(etablissement_id,acteur_id,action,cible_id) VALUES($1,$2,$3,$4)',[p.etablissementId,p.userId,fermee?'FERMETURE_ECRITURE':'OUVERTURE_ECRITURE',id]);return{ok:true}});
 
+app.patch('/admin/users/:id/password', async req=>{
+  const p=req.principal!;if(p.role!=='ADMIN_PRINCIPAL')throw fail('Accès refusé',403);
+  const{id}=z.object({id:z.string().uuid()}).parse(req.params);
+  const{nouveauMotDePasse}=z.object({nouveauMotDePasse:z.string().min(12).max(200)}).parse(req.body);
+  const hash=await argon2.hash(nouveauMotDePasse,{type:argon2.argon2id,memoryCost:Number(process.env.ARGON2_MEMORY_KIB??65536),timeCost:Number(process.env.ARGON2_TIME_COST??3)});
+  const r=await db.query('UPDATE utilisateurs SET password_hash=$1,must_change_password=true WHERE id=$2 AND etablissement_id=$3 RETURNING id',[hash,id,p.etablissementId]);
+  if(!r.rowCount)throw fail('Compte introuvable',404);
+  await db.query('UPDATE sessions SET revoked_at=now() WHERE utilisateur_id=$1',[id]);
+  await db.query('INSERT INTO audit(etablissement_id,acteur_id,action,cible_id) VALUES($1,$2,$3,$4)',[p.etablissementId,p.userId,'REINIT_MOT_DE_PASSE',id]);
+  return{ok:true};
+});
+
 app.patch('/admin/users/:id/status', async req=>{
   const p=req.principal!;if(p.role!=='ADMIN_PRINCIPAL')throw fail('Accès refusé',403);const{id}=z.object({id:z.string().uuid()}).parse(req.params);const{actif}=z.object({actif:z.boolean()}).parse(req.body);
   await tx(async c=>{const r=await c.query('UPDATE utilisateurs SET actif=$1 WHERE id=$2 AND etablissement_id=$3 RETURNING id',[actif,id,p.etablissementId]);if(!r.rowCount)throw fail('Compte introuvable',404);if(!actif)await c.query('UPDATE sessions SET revoked_at=now() WHERE utilisateur_id=$1',[id]);await c.query('INSERT INTO audit(etablissement_id,acteur_id,action,cible_id) VALUES($1,$2,$3,$4)',[p.etablissementId,p.userId,actif?'ACTIVATION_COMPTE':'SUSPENSION_COMPTE',id]);});return{ok:true};

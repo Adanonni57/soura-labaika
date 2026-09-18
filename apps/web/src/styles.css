@@ -26,3 +26,16 @@
 .checkline{display:flex;align-items:center;gap:8px;font-weight:400;font-size:13px}
 .checkline input{width:auto;margin:0}
 .success{color:#146c43;background:#e7f4ef;padding:10px;border-radius:8px}
+.chat>header{gap:14px}
+.chat>header>div:first-of-type{flex:1;min-width:0}
+.chat h2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shell nav button:hover{background:#153e36}
+.shell aside footer button:hover{color:#fff}
+.empty-nav{color:#8fa8a1;font-size:13px;padding:14px 12px;text-align:center}
+.admin-user-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.admin-user-actions{display:flex;gap:10px;flex-shrink:0}
+.link-btn{background:transparent;color:#147d64;font-weight:600;font-size:12px;padding:2px 0;border-radius:0}
+.link-btn.danger-link{color:#b42318}
+.reset-inline{display:flex;gap:8px;margin-top:8px}
+.reset-inline input{margin:0}
+.reset-inline button{white-space:nowrap;padding:10px 14px}
